@@ -99,8 +99,7 @@ def extract_text_from_pdf(pdf_file):
         return f"Error extracting text: {e}"
 
 def parse_jobs(text: str) -> list:
-    text = re.sub(r"```json|
-```", "", text).strip()
+    text = re.sub(r"```json|```", "", text).strip()
     s, e = text.find("["), text.rfind("]")
     if s == -1 or e == -1: return []
     try: return json.loads(text[s:e+1])
