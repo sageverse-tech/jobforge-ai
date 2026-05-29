@@ -1,18 +1,15 @@
-# ⚡ JobForge AI — Real-Time Job Search Tool
+# ⚡ JobForge AI — Real-Time Job Search & Auto-Apply Tool
 
-Built for **Khushraj Varghat** | AI/ML Engineer | KK Modi University
+An open-source, AI-powered tool that helps anyone find jobs and automatically generate personalized cover letters based on their unique resume.
 
 ## Features
-- 🔍 Real-time job search across LinkedIn, Naukri, Internshala
-- 🤖 AI-generated personalized cover letters
-- 📧 Ready-to-send email drafts
-- 🔗 Direct apply links
+- 📄 **Bring Your Own Resume:** Upload your PDF resume, and the AI learns your skills.
+- 🔍 **Custom Job Search:** Search for any role (e.g., Software Engineer, Data Analyst) in any location.
+- 🤖 **AI Cover Letters:** Instantly generates cover letters perfectly matched to the job description and your skills.
+- 📧 **Ready-to-Send:** Provides a formatted email draft with direct apply links.
 
-## Setup
-1. Get a free Anthropic API key at [console.anthropic.com](https://console.anthropic.com)
-2. Open the app
-3. Enter your API key (stored only for the session)
-4. Search and apply!
-
-## Deploy
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://streamlit.io)
+## Setup & Run
+1. Install requirements: `pip install -r requirements.txt`
+2. Run the app: `streamlit run app.py`
+3. Get a free Anthropic API key at [console.anthropic.com](https://console.anthropic.com)
+4. Upload your resume, enter your target role, and automate your job hunt!
