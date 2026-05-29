@@ -1,15 +1,14 @@
 # ⚡ JobForge AI — Real-Time Job Search & Auto-Apply Tool
 
-An open-source, AI-powered tool that helps anyone find jobs and automatically generate personalized cover letters based on their unique resume.
+An open-source, AI-powered tool that helps job seekers automate their search and instantly generate highly personalized cover letters based on their resumes. Powered by Google Gemini.
 
-## Features
-- 📄 **Bring Your Own Resume:** Upload your PDF resume, and the AI learns your skills.
-- 🔍 **Custom Job Search:** Search for any role (e.g., Software Engineer, Data Analyst) in any location.
-- 🤖 **AI Cover Letters:** Instantly generates cover letters perfectly matched to the job description and your skills.
-- 📧 **Ready-to-Send:** Provides a formatted email draft with direct apply links.
+## 🌟 Features
+- 📄 **Bring Your Own Resume:** Upload your PDF resume directly into the app.
+- 🔍 **Smart Job Search:** Search for any role (e.g., Software Engineer, Data Analyst) in any location.
+- 🤖 **Gemini-Powered Cover Letters:** Automatically matches your resume skills with the job description to write perfect letters.
+- 📧 **Ready-to-Send Drafts:** Generates a complete email template with direct apply links.
 
-## Setup & Run
-1. Install requirements: `pip install -r requirements.txt`
-2. Run the app: `streamlit run app.py`
-3. Get a free Anthropic API key at [console.anthropic.com](https://console.anthropic.com)
-4. Upload your resume, enter your target role, and automate your job hunt!
+## 🚀 Setup & Run
+1. Install the dependencies:
+   ```bash
+   pip install -r requirements.txt
