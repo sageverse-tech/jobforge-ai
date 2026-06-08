@@ -5,6 +5,7 @@ import json
 import re
 import PyPDF2
 import io
+import os
 
 # ─── Page Config ───────────────────────────────────────────────
 st.set_page_config(
@@ -94,51 +95,64 @@ def extract_text_from_pdf(pdf_file):
         reader = PyPDF2.PdfReader(pdf_file)
         text = ""
         for page in reader.pages:
-            text += page.extract_text() + "\n"
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted + "\n"
         return text
     except Exception as e:
         return f"Error extracting text: {e}"
 
 def parse_jobs(text: str) -> list:
-    text = text.replace("```json", "").replace("```", "").strip()
+    # Saare clean up formats apply karenge taaki pure JSON array mile
+    text = re.sub(r"```json\s*", "", text)
+    text = text.replace("```", "").strip()
     s, e = text.find("["), text.rfind("]")
-    if s == -1 or e == -1: return []
-    try: return json.loads(text[s:e+1])
-    except Exception: return []
+    if s == -1 or e == -1: 
+        return []
+    try: 
+        return json.loads(text[s:e+1])
+    except Exception: 
+        return []
 
 def search_jobs_with_gemini(query: str, api_key: str, resume_context: str) -> list:
-    client = genai.Client(api_key=api_key)
+    # Naye SDK mein key environment variable se uthana best practice hai
+    os.environ["GEMINI_API_KEY"] = api_key
+    client = genai.Client()
     
-    prompt = f"""You are a job search assistant. Search the web for real, current job postings based on the user's query.
-Return ONLY a JSON array (no markdown block, no explanation) of up to 6 job objects following this exact structure:
+    prompt = f"""You are a structural job engine. Search the live web for real, active job postings based on the query.
+Return ONLY a valid JSON array of up to 6 job objects following this precise schema:
 [
   {{
-    "title": "exact job title",
-    "company": "company name",
-    "location": "city or Remote",
+    "title": "Exact position name",
+    "company": "Company name",
+    "location": "City or Remote",
     "type": "Internship or Full-time",
-    "description": "2-sentence description",
-    "tags": ["skill1","skill2","skill3"],
-    "applyLink": "direct URL to job posting",
-    "source": "LinkedIn or Naukri or Internshala or Company Website",
-    "match": 90
+    "description": "2-sentence quick breakdown",
+    "tags": ["skill1","skill2"],
+    "applyLink": "Valid job URL",
+    "source": "LinkedIn or Naukri or Company Portal",
+    "match": 85
   }}
 ]
-Resume context for matching calculation: {resume_context[:800]}
 
-Search Query: {query}"""
+Context score reference data: {resume_context[:600]}
+Search Objective: {query}"""
 
+    # FIXED: Google search tool passing syntax corrected for google-genai SDK
     response = client.models.generate_content(
         model='gemini-2.5-flash',
         contents=prompt,
         config=types.GenerateContentConfig(
-            tools=[types.Tool(google_search=types.GoogleSearch())]
+            tools=[{"google_search": {}}],
+            temperature=0.2 # low response randomness for strict JSON production
         )
     )
     return parse_jobs(response.text)
 
 def generate_cover_letter(job: dict, api_key: str, resume_text: str, user_name: str) -> str:
-    client = genai.Client(api_key=api_key)
+    os.environ["GEMINI_API_KEY"] = api_key
+    client = genai.Client()
+    
     prompt = f"""Write a highly professional and tailored corporate cover letter for {user_name}.
 Job Title: {job.get('title')}
 Company: {job.get('company')}
@@ -256,15 +270,14 @@ with col_left:
         try:
             results = search_jobs_with_gemini(query, st.session_state.api_key, st.session_state.resume_text)
             all_jobs.extend(results)
+            st.session_state.jobs = dedup(all_jobs)
+            st.session_state.searched = True
+            st.session_state.selected = None
+            st.session_state.cover_letter = ""
         except Exception as ex:
             st.warning(f"Search pipeline exception: {ex}")
             
         progress.empty()
-        st.session_state.jobs = dedup(all_jobs)
-        st.session_state.searched = True
-        st.session_state.selected = None
-        st.session_state.cover_letter = ""
-        st.rerun()
 
     if not st.session_state.api_key or not st.session_state.resume_text:
         st.markdown("""<div style='font-size:11px;color:#f85149;font-family:"JetBrains Mono",monospace;margin-top:6px'>
@@ -318,7 +331,6 @@ with col_left:
                             letter = generate_cover_letter(job, st.session_state.api_key, st.session_state.resume_text, st.session_state.user_name)
                             st.session_state.selected = job
                             st.session_state.cover_letter = letter
-                            st.rerun()
                         except Exception as ex:
                             st.error(f"Generation error: {ex}")
 
